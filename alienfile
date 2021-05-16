@@ -1,0 +1,42 @@
+use alienfile;
+
+use FFI::CheckLib qw( find_lib_or_die );
+plugin 'PkgConfig' => 'libsdl2';
+
+meta->around_hook('probe' => sub {
+  my $orig = shift;
+  my $build = shift;
+  my $type = $orig->($build, @_);
+  return $type if $type eq 'share';
+  find_lib_or_die lib => sdl2 => symbol => [
+	qw[SDL_log SDL_rect]
+  ]
+  ;
+  return $type;
+});
+
+share {
+  plugin Download => (
+    #url => 'https://sourceforge.net/projects/libuuid/files/libuuid-1.0.3.tar.gz',
+	url => 'https://libsdl.org/release/SDL2-2.0.14.tar.gz',
+    version => qr/([0-9\.]+)/,
+  );
+  plugin Extract => 'tar.gz';
+  plugin 'Build::Autoconf';
+
+  patch [
+      # Patch pkg-config so we can #include <uuid.h> and #include <uuid/uuid.h>
+      #'%{patch} -p0 < %{.install.patch}/uuid.pc.in.patch',
+  ];
+
+
+  build [
+	'mkdir build',
+	'cd build',
+    '../%{configure}',
+    '%{make} -j16',
+    '%{make} install',
+  ];
+
+  plugin 'Gather::IsolateDynamic';
+}
