@@ -1,42 +1,48 @@
 use alienfile;
-
-use FFI::CheckLib qw( find_lib_or_die );
+use FFI::CheckLib qw[find_lib_or_die];
+use Config;
 plugin 'PkgConfig' => 'libsdl2';
 
-meta->around_hook('probe' => sub {
-  my $orig = shift;
-  my $build = shift;
-  my $type = $orig->($build, @_);
-  return $type if $type eq 'share';
-  find_lib_or_die lib => sdl2 => symbol => [
-	qw[SDL_log SDL_rect]
-  ]
-  ;
-  return $type;
-});
+my $version = $ENV{ALIEN_LIBSDL2_VERSION} || '2.0.14';
+my $arch    = 'x86_64';
+
+meta->around_hook(
+    'probe' => sub {
+        my $orig  = shift;
+        my $build = shift;
+        my $type  = $orig->( $build, @_ );
+        return $type if $type eq 'share';
+        find_lib_or_die lib => sdl2 => symbol => [qw[SDL_log SDL_rect]];
+        return $type;
+    }
+);
+
+probe sub {'share'};
 
 share {
-  plugin Download => (
-    #url => 'https://sourceforge.net/projects/libuuid/files/libuuid-1.0.3.tar.gz',
-	url => 'https://libsdl.org/release/SDL2-2.0.14.tar.gz',
-    version => qr/([0-9\.]+)/,
-  );
-  plugin Extract => 'tar.gz';
-  plugin 'Build::Autoconf';
+    if ( $^O eq 'linux' || $^O eq 'darwin' ) {
+        start_url "https://libsdl.org/release/SDL2-$version.tar.gz";
+        plugin 'Download';
+        plugin Extract => 'tar.xz';
+    }
+    elsif ( $^O eq 'MSWin32' ) {
+        if ( $Config{archname} !~ /^MSWin32-x64/ || $Config{ptrsize} != 8 ) {
+            start_url "https://www.libsdl.org/release/SDL2-$version-win32-x86.zip";
+        }
+        else {
+            start_url "https://www.libsdl.org/release/SDL2-$version-win32-x64.zip";
+        }
+        plugin 'Download';
+        plugin Extract => 'zip';
+    }
 
-  patch [
-      # Patch pkg-config so we can #include <uuid.h> and #include <uuid/uuid.h>
-      #'%{patch} -p0 < %{.install.patch}/uuid.pc.in.patch',
-  ];
+    plugin 'Build::Copy';
 
-
-  build [
-	'mkdir build',
-	'cd build',
-    '../%{configure}',
-    '%{make} -j16',
-    '%{make} install',
-  ];
-
-  plugin 'Gather::IsolateDynamic';
-}
+    gather sub {
+        my ($build) = @_;
+        $build->runtime_prop->{version} = $version;
+        $build->runtime_prop->{version} =~ s/^v//;
+        $build->runtime_prop->{cflags} = "-I@{[ $build->runtime_prop->{prefix} ]}/include ";
+        $build->runtime_prop->{libs}   = "-L@{[ $build->runtime_prop->{prefix} ]}/lib -lsdl2 ";
+    };
+};

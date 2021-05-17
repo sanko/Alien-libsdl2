@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         runner: [ubuntu-latest, macos-latest, windows-latest]
-        perl: [ '5.20', '5.30', '5.32', 'latest', 'threaded' ]
+        perl: [ '5.20', '5.30', '5.32', 'latest' ]
 
     runs-on: ${{matrix.runner}}
     name: OS ${{matrix.runner}} Perl ${{matrix.perl}}
@@ -32,9 +32,9 @@ jobs:
     - name: perl -V
       run: perl -V
 
-    - name: Install libsdl2
-      if: ${{ startsWith( matrix.runner, 'ubuntu-' )  }}
-      run: sudo apt-get install libsdl2-dev
+    #- name: Install libsdl2
+    #  if: ${{ startsWith( matrix.runner, 'ubuntu-' )  }}
+    #  run: sudo apt-get install libsdl2-dev
 
     #- name: Install dependencies
     #  run: |
@@ -52,6 +52,10 @@ jobs:
     - name: Show content of log files on Windows
       if: ${{ failure() && startsWith( matrix.runner, 'windows-' )  }}
       run: cat C:\Users\RUNNER~1\.cpanm\work\*\build.log
+
+    #- name: Install
+    #  run: |
+    #      cpanm -v --notest .
 
     - name: Regular Tests
       run: |

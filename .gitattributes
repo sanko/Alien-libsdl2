@@ -1,0 +1,9 @@
+# Perl
+*.pl linguist-language=Perl
+*.pm linguist-language=Perl
+*.t linguist-language=Perl
+alienfile  linguist-language=Perl
+
+# Git
+.gitattributes export-ignore
+.gitignore export-ignore
