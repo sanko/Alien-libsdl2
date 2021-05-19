@@ -87,7 +87,7 @@
    "provides" : {
       "Alien::libsdl2" : {
          "file" : "lib/Alien/libsdl2.pm",
-         "version" : "1.0"
+         "version" : "1.01"
       }
    },
    "release_status" : "stable",
@@ -102,11 +102,13 @@
          "web" : "https://github.com/sanko/Alien-libsdl2"
       }
    },
-   "version" : "1.0",
+   "version" : "1.01",
    "x_alienfile" : {
       "generated_by" : "Dist::Zilla::Plugin::AlienBuild version 0.31",
       "requires" : {
          "share" : {
+            "Alien::Build::Plugin::Gather::IsolateDynamic" : "0.48",
+            "Config" : "0",
             "HTTP::Tiny" : "0.044",
             "IO::Socket::SSL" : "1.56",
             "Net::SSLeay" : "1.49",

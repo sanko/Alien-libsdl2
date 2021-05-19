@@ -1,8 +1,9 @@
-package Alien::libsdl2 1.0 {
-    use strict;
-    use warnings;
-    use base qw[Alien::Base];
-};
+package Alien::libsdl2;
+use strict;
+use warnings;
+use base qw[Alien::Base];
+our $VERSION = '1.01';
+
 1;
 __END__
 
