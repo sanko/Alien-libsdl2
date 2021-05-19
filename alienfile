@@ -20,26 +20,26 @@ meta->around_hook(
 #probe sub {'share'};
 
 share {
-    if ( $^O eq 'linux' || $^O eq 'darwin' ) {
-        plugin 'Download' => ( url => "https://libsdl.org/release/SDL2-$version.tar.gz" );
-        plugin Extract    => 'tar.xz';
-        plugin 'Build::Autoconf';
-        build [
-            'mkdir build',
-            'cd build',
-            '../%{configure}',
-            '%{make} -j16',
-            '%{make} install',
-        ];
-
-    }
-    elsif ( $^O eq 'MSWin32' ) {
+    if ( $^O eq 'MSWin32' ) {
         plugin 'Download' => start_url(
             ( $Config{archname} !~ /^MSWin32-x64/ || $Config{ptrsize} != 8 )
             ? "https://www.libsdl.org/release/SDL2-$version-win32-x86.zip"
             : "https://www.libsdl.org/release/SDL2-$version-win32-x64.zip"
         );
         plugin Extract => 'zip';
+    }
+    else {    # Linux, OSX, etc.
+        plugin 'Download' => ( url => "https://libsdl.org/release/SDL2-$version.tar.gz" );
+        plugin Extract    => 'tar.xz';
+        plugin 'Build::Autoconf';
+        plugin 'Build::Make' => 'gmake';
+        build [
+            'mkdir build',
+            'cd build',
+            '../%{configure}',
+            '%{gmake}',
+            '%{gmake} install',
+        ];
     }
 
     plugin 'Build::Copy';

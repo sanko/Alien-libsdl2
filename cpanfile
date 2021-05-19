@@ -18,6 +18,7 @@ on 'build' => sub {
     requires 'Alien::Build' => '2.40';
     requires 'Alien::Build::Plugin::Build::Autoconf' => '2.40';
     requires 'Alien::Build::Plugin::Build::Make' => '2.40';
+	requires 'Alien::gmake';
     requires 'Alien::Build::Plugin::Probe::Vcpkg' => '2.40';
     requires 'Config';
     requires 'ExtUtils::MakeMaker';

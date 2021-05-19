@@ -1,5 +1,9 @@
 Revision history for Alien::libsdl2
 
+1.02
+
+	- Attempt to build libs on bsd
+
 1.01
 
 	- Attempt to build libs on darwin/OSX
