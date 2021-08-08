@@ -1,0 +1,9 @@
+our $DIR;
+my $Win32 = $^O eq 'MSWin32';
+
+return {
+  alien  => ['Alien::libsdl2'],
+  cflags => "-I/include",
+  libs   => `pkg-config --libs sdl2`.  ( $Win32 ? '-lhid -lsetupapi -Wl,-Bdynamic' : ''),
+  source => "$DIR/*.c",
+}

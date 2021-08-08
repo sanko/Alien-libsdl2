@@ -2,6 +2,8 @@ use Test2::V0;
 use Test::Alien 1.90;
 use lib -d '../t' ? './lib' : 't/lib';
 use Alien::libsdl2;
+my $Win32 = $^O eq 'MSWin32';
+
 #
 #skip_all 'requires a shared object or DLL'
 #    unless Alien::libsdl2->dynamic_libs;
@@ -18,10 +20,16 @@ eval { diag( 'Dynamic libs: ' . join ':', Alien::libsdl2->dynamic_libs ); };
 warn $@ if $@;
 diag( 'bin dir: ' . join( ' ', Alien::libsdl2->bin_dir ) );
 alien_ok 'Alien::libsdl2';
-ffi_ok { api => 1, experimental => 2, lib => [ Alien::libsdl2->dynamic_libs ] }, with_subtest {
+ffi_ok {
+    api          => 1,
+    experimental => 2,
+    lib          => [ Alien::libsdl2->dynamic_libs ]
+    },
+    with_subtest {
     my ($ffi) = @_;
-    my $init = $ffi->function( SDL_Init => ['uint32'] => 'int' )->call(0);
-    ok !$init, 'Init(...) returns okay';
-};
+    $ffi->bundle('Init');
+    ok $ffi->function( Log => ['string'] => 'int' )->call("testing"),
+        '[bundle] Log(...) returns okay';
+    };
 #
 done_testing;
