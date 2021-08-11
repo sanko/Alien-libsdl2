@@ -21,8 +21,10 @@ diag( 'bin dir: ' . join( ' ', Alien::libsdl2->bin_dir ) );
 alien_ok 'Alien::libsdl2';
 todo 'I need to get bundle working on Windows without direct access to a Windows box' => sub {
     ffi_ok {
-        api => 1, symbols => ['SDL_Init'], experimental => 2,
-        lib => [ Alien::libsdl2->dynamic_libs ]
+        api          => 1,
+        symbols      => ['SDL_Init'],
+        experimental => 2,
+        lib          => [ Alien::libsdl2->dynamic_libs ]
         },
         with_subtest {
         my ($ffi) = @_;

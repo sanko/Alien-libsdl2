@@ -8,18 +8,13 @@ my $VC    = $Win32                              && ( $Config{ccname} eq 'cl' ? 1
 my $x64   = $Config{archname} =~ /^MSWin32-x64/ && $Config{ptrsize} == 8;
 
 #
-plugin 'PkgConfig' => (
-    pkg_name => 'sdl2',
-);
+
 probe sub {
     my ($build) = @_;    # $build is the Alien::Build instance.
-    system 'pkg-config --exists libsdl2';
-    return 'share' if $? != 0;
-    system 'pkg-config --exists libsdl2-dev';
-    return 'share' if $? != 0;
-    'system';
+    return 'share';      # We need headers
+    system 'pkg-config --exists sdl2';
+    $? == 0 ? 'system' : 'share';
 };
-
 share {
     start_url 'https://libsdl.org/release';
 
@@ -51,7 +46,6 @@ share {
                     . ( $x64 ? 'x86_64' : 'i686' )
                     . '-w64-mingw32 prefix=%{.install.prefix}',
             ];
-            _gather();
         }
     }
     else {
@@ -70,22 +64,19 @@ share {
             '%{gmake} -j 10',
             '%{gmake} install',
         ];
-        _gather();
     }
 };
 
 plugin 'Gather::IsolateDynamic';
 
-sub _gather() {
-    gather [
-        [ 'pkg-config --modversion sdl2',                                  \'%{.runtime.version}' ],
-        [ 'pkg-config --cflags ' . ( $Win32 ? '--static' : '' ) . ' sdl2', \'%{.runtime.cflags}' ],
-        [
-            ( $Win32 ? 'cd %{.install.prefix}; sh sdl-config --libs' : 'pkg-config --cflags sdl2' ),
-            \'%{.runtime.libs}'
-        ],
-    ];
-}
+gather [
+    [ 'pkg-config --modversion sdl2',                                  \'%{.runtime.version}' ],
+    [ 'pkg-config --cflags ' . ( $Win32 ? '--static' : '' ) . ' sdl2', \'%{.runtime.cflags}' ],
+    [
+        ( $Win32 ? 'cd %{.install.prefix}; sh sdl-config --libs' : 'pkg-config --libs sdl2' ),
+        \'%{.runtime.libs}'
+    ],
+];
 
 #gather sub {
 #        my ($build) = @_;

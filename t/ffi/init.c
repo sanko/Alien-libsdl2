@@ -1,8 +1,8 @@
-#ifdef _WIN32
+//#ifdef _WIN32
 //#include "SDL.h"
-#else
+//#else
 #include "SDL.h"
-#endif
+//#endif
 #include <ffi_platypus_bundle.h>
 
 void ffi_pl_bundle_init(const char *package, int argc, void *argv[]) {
@@ -23,10 +23,10 @@ void ffi_pl_bundle_fini(const char *package) {
 }
 
 int Log(const char *line) {
-#ifdef _WIN32
+//#ifdef _WIN32
     //warn(line);
-#else
+//#else
     SDL_Log(line);
-#endif
+//#endif
   return 1;
 }
