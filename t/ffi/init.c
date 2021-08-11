@@ -1,5 +1,5 @@
 #ifdef _WIN32
-#include "SDL.h"
+//#include "SDL.h"
 #else
 #include "SDL.h"
 #endif
@@ -23,6 +23,10 @@ void ffi_pl_bundle_fini(const char *package) {
 }
 
 int Log(const char *line) {
-  SDL_Log(line);
+#ifdef _WIN32
+    //warn(line);
+#else
+    SDL_Log(line);
+#endif
   return 1;
 }

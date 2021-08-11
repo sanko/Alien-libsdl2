@@ -11,13 +11,19 @@ my $x64   = $Config{archname} =~ /^MSWin32-x64/ && $Config{ptrsize} == 8;
 plugin 'PkgConfig' => (
     pkg_name => 'sdl2',
 );
-
-probe [ 'pkg-config --exists libsdl2', 'pkg-config --exists libsdl2-dev' ];
+probe sub {
+    my ($build) = @_;    # $build is the Alien::Build instance.
+    system 'pkg-config --exists libsdl2';
+    return 'share' if $? != 0;
+    system 'pkg-config --exists libsdl2-dev';
+    return 'share' if $? != 0;
+    'system';
+};
 
 share {
     start_url 'https://libsdl.org/release';
 
-    if ( $Win32 && 0 ) {
+    if ($Win32) {
         if ($VC) {
             plugin 'Download' => (
 
@@ -28,35 +34,24 @@ share {
             plugin 'Extract' => 'zip';
             build [
                 'move lib _lib',
-                'move _lib/' . ( $x64 ? 'x64' : 'x86' ) . ' lib',
-
+                'move _lib/' . ( $x64 ? 'x64' : 'x86' ) . ' lib'
             ];
         }
         else {
             plugin 'Download' => (
 
-                #https://libsdl.org/release/SDL2-2.0.14.tar.gz
-                filter  => qr/^SDL2-[0-9\.]+\.tar\.gz$/,
-                version => qr/^SDL2-([0-9\.]+)\.tar\.gz$/,
+                #https://libsdl.org/release/SDL2-devel-2.0.14-mingw.tar.gz
+                filter  => qr/^SDL2-devel-[0-9\.]+-mingw\.tar\.gz$/,
+                version => qr/^SDL2-devel-([0-9\.]+)-mingw\.tar\.gz$/,
             );
-            plugin 'Extract' => 'tar.gz';
-            plugin 'Build::CMake';
+            plugin 'Extract'     => 'tar.gz';
+            plugin 'Build::Make' => 'gmake';
             build [
-                # this is the default build step, if you do not specify one.
-                'mkdir build', 'cd build',
-                [
-                    '"%{cmake}" -S %{.install.extract} -B .',
-                    @{ meta->prop->{plugin_build_cmake}->{args} },
-
-                    # ... put extra cmake args here ...
-                    #'%{.install.extract}'
-                ],
-                'dir',
-                'make',
-                'make install'
+                      '%{make} install-package arch='
+                    . ( $x64 ? 'x86_64' : 'i686' )
+                    . '-w64-mingw32 prefix=%{.install.prefix}',
             ];
             _gather();
-
         }
     }
     else {
@@ -85,7 +80,10 @@ sub _gather() {
     gather [
         [ 'pkg-config --modversion sdl2',                                  \'%{.runtime.version}' ],
         [ 'pkg-config --cflags ' . ( $Win32 ? '--static' : '' ) . ' sdl2', \'%{.runtime.cflags}' ],
-        [ 'pkg-config --libs       sdl2',                                  \'%{.runtime.libs}' ],
+        [
+            ( $Win32 ? 'cd %{.install.prefix}; sh sdl-config --libs' : 'pkg-config --cflags sdl2' ),
+            \'%{.runtime.libs}'
+        ],
     ];
 }
 
