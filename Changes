@@ -1,5 +1,9 @@
 Revision history for Alien::libsdl2
 
+1.04
+
+	- Attempt to build lib on Win32 for shared install
+
 1.03
 
 	- Prep for bundle
