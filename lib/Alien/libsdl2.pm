@@ -39,7 +39,7 @@ require L<libsdl2|http://libsdl.org>.
 
 =over
 
-=item L<libsdl2|http://libsdl.com>
+=item L<libsdl2|http://libsdl.org>
 
 =item L<Alien::SDL2> - Ancient Alien for SDL2 (builds w/ SDL2-2.0.0 from 2013)
 

@@ -32,7 +32,7 @@ require [libsdl2](http://libsdl.org).
 
 # SEE ALSO
 
-- [libsdl2](http://libsdl.com)
+- [libsdl2](http://libsdl.org)
 - [Alien::SDL2](https://metacpan.org/pod/Alien%3A%3ASDL2) - Ancient Alien for SDL2 (builds w/ SDL2-2.0.0 from 2013)
 
 # Platform Support
