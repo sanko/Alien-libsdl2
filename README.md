@@ -1,3 +1,7 @@
+[![Actions Status](https://github.com/sanko/Alien-libsdl2/workflows/CI/badge.svg)](https://github.com/sanko/Alien-libsdl2/actions)
+[![GitHub tag](https://img.shields.io/github/tag/sanko/Alien-libsdl2.svg)]()
+[![Cpan version](https://img.shields.io/cpan/v/Alien-libsdl2.svg)](https://metacpan.org/release/Alien-libsdl2)
+
 # NAME
 
 Alien::libsdl2 - Find or download and install libsdl2
@@ -36,11 +40,6 @@ require [libsdl2](http://libsdl.org).
 This dist has been tested on various modern versions of perl on Windows Server
 2019, Ubuntu (20.04.2), and OSX (10.15.7). See
 https://github.com/sanko/Alien-libsdl2/actions
-
-On OSX and \*nix, libsdl2 is built from source.
-
-On Windows, prebuilt shared libraries are downloaded from libsdl.org and
-installed.
 
 # LICENSE
 
