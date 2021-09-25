@@ -1,0 +1,26 @@
+name: Solaris
+
+on:
+    push:
+        branches: '*'
+    pull_request:
+        branches: '*'
+
+jobs:
+  testfreebsd:
+    runs-on: macos-latest
+    name: A job to run test Solaris
+    steps:
+    - uses: actions/checkout@v2
+    - name: Test in Solaris
+      id: test
+      uses: vmactions/solaris-vm@v0.0.3
+      with:
+        run: |
+          ls -lah
+          whoami
+          env
+          freebsd-version
+          curl -L https://cpanmin.us | perl - -v -n App::cpanminus
+          curl -L https://cpanmin.us | perl - -v -n --installdeps .
+          curl -L https://cpanmin.us | perl - -v .
